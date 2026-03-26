@@ -3,9 +3,20 @@
 ## 1. System Design
 
 **a. Initial design**
-
+- Core actions
+    + Add a pet
+    + Schedule vaccine appointments
+    + Plan nutrious diet
 - Briefly describe your initial UML design.
+
+    My initial design uses four core classes: `Owner`, `Pet`, `Task`, and `Scheduler`. The idea is that an `Owner` manages one or more pets, each `Pet` has a list of care tasks, and each `Task` includes task name, type of care, and how long the task takes. The `Scheduler` evaluates those tasks using time limits, priorities, and owner preferences to build a daily plan.
 - What classes did you include, and what responsibilities did you assign to each?
+    - `Owner`: stores the owner's name, daily time available, and care preferences such as preferred walk times or medication reminders.
+    - `Pet`: stores pet-specific details such as name, species, age, and health notes, and owns the list of tasks for that pet.
+    - `Task`: represents one care activity with attributes like title, category, duration, priority, due window, and whether it is recurring or required.
+    - `Scheduler`: contains the scheduling algorithm that sorts, filters, and selects tasks based on constraints, then returns a daily plan with explanations.
+
+![Initial UML Diagram](image/initial_version.png)
 
 **b. Design changes**
 
