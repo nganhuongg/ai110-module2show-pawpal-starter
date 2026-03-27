@@ -9,6 +9,42 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 from pawpal_system import Pet, Scheduler, Task
 
 
+def test_sort_by_time_returns_tasks_in_chronological_order():
+    """Tasks should be sorted from earliest HH:MM time to latest."""
+    scheduler = Scheduler()
+    tasks = [
+        Task(
+            title="Evening medication",
+            category="medication",
+            duration_minutes=5,
+            priority=3,
+            time="18:00",
+        ),
+        Task(
+            title="Lunch feeding",
+            category="feeding",
+            duration_minutes=10,
+            priority=2,
+            time="12:00",
+        ),
+        Task(
+            title="Morning walk",
+            category="walk",
+            duration_minutes=30,
+            priority=3,
+            time="06:30",
+        ),
+    ]
+
+    sorted_tasks = scheduler.sort_by_time(tasks)
+
+    assert [task.title for task in sorted_tasks] == [
+        "Morning walk",
+        "Lunch feeding",
+        "Evening medication",
+    ]
+
+
 def test_mark_complete_changes_task_status():
     """Calling mark_complete should update the task completion state."""
     task = Task(
@@ -64,6 +100,36 @@ def test_mark_task_complete_creates_next_weekly_occurrence():
 
     assert next_task is not None
     assert next_task.due_date == date(2026, 4, 2)
+
+
+def test_detect_time_conflicts_flags_duplicate_times():
+    """The scheduler should return a warning for tasks starting at the same time."""
+    scheduler = Scheduler()
+    mochi = Pet(name="Mochi", species="dog", age=4)
+    luna = Pet(name="Luna", species="cat", age=7)
+
+    lunch = Task(
+        title="Lunch feeding",
+        category="feeding",
+        duration_minutes=10,
+        priority=2,
+        time="12:00",
+    )
+    vet_call = Task(
+        title="Vet call",
+        category="appointment",
+        duration_minutes=20,
+        priority=2,
+        time="12:00",
+    )
+
+    mochi.add_task(lunch)
+    luna.add_task(vet_call)
+
+    warnings = scheduler.detect_time_conflicts([lunch, vet_call])
+
+    assert len(warnings) == 1
+    assert "Lunch feeding for Mochi overlaps with Vet call for Luna" in warnings[0]
 
 
 def test_add_task_increases_pet_task_count():
