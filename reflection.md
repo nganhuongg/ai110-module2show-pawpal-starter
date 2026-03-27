@@ -13,7 +13,7 @@
 - What classes did you include, and what responsibilities did you assign to each?
     - `Owner`: stores the owner's name, daily time available, and care preferences such as preferred walk times or medication reminders.
     - `Pet`: stores pet-specific details such as name, species, age, and health notes, and owns the list of tasks for that pet.
-    - `Task`: represents one care activity with attributes like title, category, duration, priority, due window, and whether it is recurring or required.
+    - `Task`: represents one care activity with attributes like title, category, duration, priority, due window, completion status, and whether it is recurring or required.
     - `Scheduler`: contains the scheduling algorithm that sorts, filters, and selects tasks based on constraints, then returns a daily plan with explanations.
 
 ![Initial UML Diagram](image/initial_version.png)
@@ -21,7 +21,14 @@
 **b. Design changes**
 
 - Did your design change during implementation?
+    + Yes. After creating the first class skeleton, I noticed that some relationships in the UML were too simple for the actual scheduling problem.
 - If yes, describe at least one change and why you made it.
+    + One important change was adding stronger relationships between classes. For example, the `Pet` class should connect back to its `Owner`, and each `Task` should be clearly associated with a specific `Pet`. This makes it easier for the scheduler to explain who a task belongs to and apply owner preferences correctly.
+    + Another improvement was recognizing that the scheduler needs a clearer output structure. Instead of adding another class just for scheduled results, I simplified the design so the `Scheduler` creates plan entries directly. Each entry stores the selected task, its time slot, and the reason it was chosen. This keeps the code more convenient while still making the plan easy to test and explain in the CLI or Streamlit app.
+    + I would also redesign the scheduler so it can support scheduling across all pets owned by one person, not just one pet at a time. That change better matches the original scenario where one owner may manage multiple pets within the same daily time limit.
+    + I also updated the `Task` design to include a completion state and a `mark_complete()` method so the system can track whether a care task has already been finished.
+
+![Improved UML Diagram](image/improved_version.png)
 
 ---
 
